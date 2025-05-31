@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英语单词笔记本</title>
+    <style>
+        /* 基础样式 */
+        body {
+            font-family: 'Microsoft YaHei', 'SimHei', 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        /* 页面布局 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        
+        /* 页面头部 */
+        .page-header {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            padding: 10px 0;
+            color: #333;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+            margin: 10px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin: 12px 0;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 5px 0;
+            box-sizing: border-box;
+            font-size: 16px; /* 移动端更适合的字体大小 */
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 5px;
+            font-size: 16px;
+            width: auto;
+            min-height: 44px; /* 移动端触摸友好的最小高度 */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background-color: #4A90E2;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        /* 单词列表样式 */
+        .word-item {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .word-info {
+            margin-bottom: 10px;
+        }
+        
+        .word-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.2rem;
+        }
+        
+        .word-info p {
+            margin: 5px 0;
+            color: #666;
+        }
+        
+        .word-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        /* 详情页面样式 */
+        .word-details {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px auto;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .translations-section,
+        .related-words-section {
+            margin: 15px 0;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .translation-item {
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .translation-item span {
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .translation-item .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        
+        /* 消息提示样式 */
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* 功能按钮组样式 */
+        .function-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+        }
+        
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .page-header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+            
+            .function-group {
+                flex-direction: column;
+                padding: 8px;
+            }
+            
+            .word-item {
+                padding: 12px;
+            }
+            
+            .translation-item {
+                padding: 10px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .form-control {
+                padding: 10px;
+            }
+            
+            .translations-section,
+            .related-words-section {
+                padding: 10px;
+            }
+        }
+        
+        /* 添加触摸反馈效果 */
+        @media (hover: none) {
+            .btn:active {
+                opacity: 0.7;
+            }
+            
+            .word-item:active {
+                background-color: #f8f9fa;
+            }
+        }
+        
+        /* 优化可读性 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1a1a1a;
+                color: #fff;
+            }
+            
+            .card,
+            .word-item,
+            .word-details,
+            .modal-content,
+            .translation-item {
+                background: #2d2d2d;
+                color: #fff;
+            }
+            
+            .form-control {
+                background: #333;
+                color: #fff;
+                border-color: #444;
+            }
+            
+            .translations-section,
+            .related-words-section {
+                background: #333;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>英语单词笔记本</h1>
+        
+        <!-- 功能按钮组 -->
+        <div class="card function-group">
+            <button class="btn btn-primary" onclick="showAddWordForm()">添加单词</button>
+            <button class="btn btn-success" onclick="exportData()">导出数据</button>
+            <button class="btn btn-success" onclick="document.getElementById('importFile').click()">导入数据</button>
+            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+            <button class="btn btn-danger" onclick="deleteSelectedWords()">删除选中</button>
+        </div>
+
+        <!-- 排序选项 -->
+        <div class="card">
+            <div class="form-group">
+                <label for="sortSelect">排序方式：</label>
+                <select id="sortSelect" class="form-control" onchange="sortWords()">
+                    <option value="default">默认排序</option>
+                    <option value="alphabetical">按字母排序</option>
+                    <option value="time">按时间排序</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- 搜索栏 -->
+        <div class="card">
+            <input type="text" id="searchInput" class="form-control" placeholder="搜索单词或翻译" onkeyup="searchWords()">
+        </div>
+        
+        <!-- 单词列表 -->
+        <div id="wordList"></div>
+    </div>
+
+    <script>
+        // 数据存储
+        let words = [];
+        let currentWordId = null;
+
+        // 初始化
+        function init() {
+            loadWords();
+            renderMainPage();
+        }
+
+        // 加载数据
+        function loadWords() {
+            try {
+                const stored = localStorage.getItem('words');
+                words = stored ? JSON.parse(stored) : [];
+            } catch (error) {
+                console.error('加载数据失败：', error);
+                showMessage('加载数据失败', 'error');
+            }
+        }
+
+        // 保存数据
+        function saveWords() {
+            try {
+                localStorage.setItem('words', JSON.stringify(words));
+            } catch (error) {
+                console.error('保存数据失败：', error);
+                showMessage('保存数据失败', 'error');
+            }
+        }
+
+        // 渲染单词列表
+        function renderWordList(wordsList = words) {
+            const container = document.getElementById('wordList');
+            container.innerHTML = wordsList.map(word => `
+                <div class="word-item">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="word-checkbox" data-id="${word.id}">
+                    </div>
+                    <div class="word-info">
+                        <h3>${word.english}</h3>
+                        <p>${word.translations.map(t => `${t.translation} (${t.type})`).join(', ')}</p>
+                    </div>
+                    <div class="word-actions">
+                        <button class="btn btn-primary" onclick="showWordDetails(${word.id})">查看详情</button>
+                        <button class="btn btn-danger" onclick="deleteWord(${word.id})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 显示单词详情
+        function showWordDetails(wordId) {
+            const word = words.find(w => w.id === wordId);
+            if (!word) return;
+
+            currentWordId = wordId;
+            const container = document.querySelector('.container');
+            container.innerHTML = `
+                <div class="page-header">
+                    <h1>单词详情</h1>
+                    <div class="function-group">
+                        <button class="btn btn-primary" onclick="renderMainPage()">返回主页</button>
+                    </div>
+                </div>
+                <div class="word-details">
+                    <h2>${word.english}</h2>
+                    
+                    <div class="translations-section">
+                        <h3>翻译和词性</h3>
+                        ${word.translations.map((t, index) => `
+                            <div class="translation-item">
+                                <span>${t.translation} (${t.type})</span>
+                                <div class="btn-group">
+                                    <button class="btn btn-primary" onclick="editTranslation(${index})">编辑</button>
+                                    <button class="btn btn-danger" onclick="deleteTranslation(${index})">删除</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button class="btn btn-success" onclick="showAddTranslationForm()">添加新翻译</button>
+                    </div>
+                    
+                    <div class="related-words-section">
+                        <h3>词生（关联词）</h3>
+                        ${word.related ? word.related.map(relatedId => {
+                            const relatedWord = words.find(w => w.id === relatedId);
+                            return relatedWord ? `
+                                <div class="translation-item">
+                                    <span>${relatedWord.english} - ${relatedWord.translations[0].translation}</span>
+                                    <div class="btn-group">
+                                        <button class="btn btn-danger" onclick="removeRelatedWord(${relatedId})">删除关联</button>
+                                    </div>
+                                </div>
+                            ` : '';
+                        }).join('') : ''}
+                        <button class="btn btn-success" onclick="showAddRelatedWordForm()">添加词生</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 添加新翻译表单
+        function showAddTranslationForm() {
+            showModal(`
+                <div class="function-group">
+                    <button class="btn btn-primary" onclick="closeModal()">返回</button>
+                </div>
+                <h3>添加新翻译</h3>
+                <input type="text" id="newTranslation" class="form-control" placeholder="输入翻译">
+                <select id="newType" class="form-control">
+                    <option value="n.">名词</option>
+                    <option value="v.">动词</option>
+                    <option value="adj.">形容词</option>
+                    <option value="adv.">副词</option>
+                </select>
+                <div class="form-group">
+                    <button class="btn btn-success" onclick="saveNewTranslation()">保存</button>
+                    <button class="btn btn-danger" onclick="closeModal()">取消</button>
+                </div>
+            `);
+        }
+
+        // 保存新翻译
+        function saveNewTranslation() {
+            const translation = document.getElementById('newTranslation').value.trim();
+            const type = document.getElementById('newType').value;
+            
+            if (!translation) {
+                showMessage('请输入翻译', 'error');
+                return;
+            }
+
+            const word = words.find(w => w.id === currentWordId);
+            if (word) {
+                // 检查重复翻译
+                if (word.translations.some(t => t.translation === translation && t.type === type)) {
+                    showMessage('该翻译已存在', 'error');
+                    return;
+                }
+
+                word.translations.push({ translation, type });
+                saveWords();
+                closeModal();
+                showWordDetails(currentWordId);
+                showMessage('新翻译添加成功', 'success');
+            }
+        }
+
+        // 编辑翻译
+        function editTranslation(index) {
+            const word = words.find(w => w.id === currentWordId);
+            if (!word) return;
+
+            const translation = word.translations[index];
+            showModal(`
+                <div class="function-group">
+                    <button class="btn btn-primary" onclick="closeModal()">返回</button>
+                </div>
+                <h3>编辑翻译</h3>
+                <input type="text" id="editTranslation" class="form-control" value="${translation.translation}">
+                <select id="editType" class="form-control">
+                    <option value="n." ${translation.type === 'n.' ? 'selected' : ''}>名词</option>
+                    <option value="v." ${translation.type === 'v.' ? 'selected' : ''}>动词</option>
+                    <option value="adj." ${translation.type === 'adj.' ? 'selected' : ''}>形容词</option>
+                    <option value="adv." ${translation.type === 'adv.' ? 'selected' : ''}>副词</option>
+                </select>
+                <div class="form-group">
+                    <button class="btn btn-success" onclick="saveEditedTranslation(${index})">保存</button>
+                    <button class="btn btn-danger" onclick="closeModal()">取消</button>
+                </div>
+            `);
+        }
+
+        // 保存编辑后的翻译
+        function saveEditedTranslation(index) {
+            const translation = document.getElementById('editTranslation').value.trim();
+            const type = document.getElementById('editType').value;
+            
+            if (!translation) {
+                showMessage('请输入翻译', 'error');
+                return;
+            }
+
+            const word = words.find(w => w.id === currentWordId);
+            if (word) {
+                word.translations[index] = { translation, type };
+                saveWords();
+                closeModal();
+                showWordDetails(currentWordId);
+                showMessage('翻译更新成功', 'success');
+            }
+        }
+
+        // 删除翻译
+        function deleteTranslation(index) {
+            const word = words.find(w => w.id === currentWordId);
+            if (!word) return;
+
+            if (word.translations.length <= 1) {
+                showMessage('无法删除最后一个翻译', 'error');
+                return;
+            }
+
+            word.translations.splice(index, 1);
+            saveWords();
+            showWordDetails(currentWordId);
+            showMessage('翻译已删除', 'success');
+        }
+
+        // 显示添加词生表单
+        function showAddRelatedWordForm() {
+            const otherWords = words.filter(w => w.id !== currentWordId);
+            showModal(`
+                <div class="function-group">
+                    <button class="btn btn-primary" onclick="closeModal()">返回</button>
+                </div>
+                <h3>添加词生</h3>
+                <select id="relatedWordSelect" class="form-control">
+                    ${otherWords.map(w => `
+                        <option value="${w.id}">${w.english} - ${w.translations[0].translation}</option>
+                    `).join('')}
+                </select>
+                <div class="form-group">
+                    <button class="btn btn-success" onclick="saveRelatedWord()">添加</button>
+                    <button class="btn btn-danger" onclick="closeModal()">取消</button>
+                </div>
+            `);
+        }
+
+        // 保存词生关联
+        function saveRelatedWord() {
+            const relatedId = parseInt(document.getElementById('relatedWordSelect').value);
+            const word = words.find(w => w.id === currentWordId);
+            
+            if (word) {
+                if (!word.related) {
+                    word.related = [];
+                }
+                
+                if (!word.related.includes(relatedId)) {
+                    word.related.push(relatedId);
+                    saveWords();
+                    closeModal();
+                    showWordDetails(currentWordId);
+                    showMessage('词生添加成功', 'success');
+                } else {
+                    showMessage('该词生关联已存在', 'error');
+                }
+            }
+        }
+
+        // 删除词生关联
+        function removeRelatedWord(relatedId) {
+            const word = words.find(w => w.id === currentWordId);
+            if (word && word.related) {
+                word.related = word.related.filter(id => id !== relatedId);
+                saveWords();
+                showWordDetails(currentWordId);
+                showMessage('词生关联已删除', 'success');
+            }
+        }
+
+        // 搜索功能
+        function searchWords() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = words.filter(word =>
+                word.english.toLowerCase().includes(keyword) ||
+                word.translations.some(t => t.translation.toLowerCase().includes(keyword))
+            );
+            renderWordList(filtered);
+        }
+
+        // 显示模态框
+        function showModal(content) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.id = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    ${content}
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 显示消息提示
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+            setTimeout(() => messageDiv.remove(), 3000);
+        }
+
+        // 返回列表
+        function goBack() {
+            renderMainPage();
+        }
+
+        // 显示添加单词表单
+        function showAddWordForm() {
+            showModal(`
+                <div class="function-group">
+                    <button class="btn btn-primary" onclick="closeModal()">返回</button>
+                </div>
+                <h3>添加新单词</h3>
+                <div class="form-group">
+                    <input type="text" id="newEnglish" class="form-control" placeholder="输入英文单词">
+                </div>
+                <div id="translationsContainer">
+                    <div class="translation-input-group">
+                        <input type="text" class="form-control translation-input" placeholder="输入翻译">
+                        <select class="form-control type-select">
+                            <option value="n.">名词</option>
+                            <option value="v.">动词</option>
+                            <option value="adj.">形容词</option>
+                            <option value="adv.">副词</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-success" onclick="addTranslationInput()">添加更多翻译</button>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" onclick="saveNewWord()">保存</button>
+                    <button class="btn btn-danger" onclick="closeModal()">取消</button>
+                </div>
+            `);
+        }
+
+        // 添加翻译输入框
+        function addTranslationInput() {
+            const container = document.getElementById('translationsContainer');
+            const div = document.createElement('div');
+            div.className = 'translation-input-group';
+            div.innerHTML = `
+                <input type="text" class="form-control translation-input" placeholder="输入翻译">
+                <select class="form-control type-select">
+                    <option value="n.">名词</option>
+                    <option value="v.">动词</option>
+                    <option value="adj.">形容词</option>
+                    <option value="adv.">副词</option>
+                </select>
+                <button class="btn btn-danger" onclick="this.parentElement.remove()">删除</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // 保存新单词
+        function saveNewWord() {
+            const english = document.getElementById('newEnglish').value.trim();
+            if (!english) {
+                showMessage('请输入英文单词', 'error');
+                return;
+            }
+
+            const translations = [];
+            const translationInputs = document.querySelectorAll('.translation-input-group');
+            
+            for (const input of translationInputs) {
+                const translation = input.querySelector('.translation-input').value.trim();
+                const type = input.querySelector('.type-select').value;
+                
+                if (translation) {
+                    translations.push({ translation, type });
+                }
+            }
+
+            if (translations.length === 0) {
+                showMessage('请至少添加一个翻译', 'error');
+                return;
+            }
+
+            // 检查是否存在相同单词
+            const existingWord = words.find(w => w.english.toLowerCase() === english.toLowerCase());
+            
+            if (existingWord) {
+                // 合并新的翻译
+                const newTranslations = translations.filter(newTrans => 
+                    !existingWord.translations.some(existingTrans => 
+                        existingTrans.translation === newTrans.translation && 
+                        existingTrans.type === newTrans.type
+                    )
+                );
+
+                if (newTranslations.length > 0) {
+                    existingWord.translations.push(...newTranslations);
+                    showMessage('新翻译已添加到现有单词', 'success');
+                } else {
+                    showMessage('该单词的翻译已存在', 'error');
+                    return;
+                }
+            } else {
+                // 添加新单词
+                const newWord = {
+                    id: Date.now(),
+                    english,
+                    translations,
+                    related: [],
+                    timestamp: Date.now()
+                };
+                words.push(newWord);
+                showMessage('新单词添加成功', 'success');
+            }
+
+            saveWords();
+            closeModal();
+            renderWordList();
+        }
+
+        // 删除单词
+        function deleteWord(id) {
+            if (confirm('确定要删除这个单词吗？')) {
+                words = words.filter(w => w.id !== id);
+                saveWords();
+                renderWordList();
+                showMessage('单词已删除', 'success');
+            }
+        }
+
+        // 删除选中的单词
+        function deleteSelectedWords() {
+            const selectedIds = Array.from(document.querySelectorAll('.word-checkbox:checked'))
+                .map(checkbox => parseInt(checkbox.dataset.id));
+            
+            if (selectedIds.length === 0) {
+                showMessage('请选择要删除的单词', 'error');
+                return;
+            }
+
+            if (confirm(`确定要删除选中的 ${selectedIds.length} 个单词吗？`)) {
+                words = words.filter(w => !selectedIds.includes(w.id));
+                saveWords();
+                renderWordList();
+                showMessage('选中的单词已删除', 'success');
+            }
+        }
+
+        // 导出数据
+        function exportData() {
+            const data = JSON.stringify(words, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `wordbook_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showMessage('数据导出成功', 'success');
+        }
+
+        // 导入数据
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedData)) {
+                        throw new Error('无效的数据格式');
+                    }
+
+                    // 验证数据格式
+                    importedData.forEach(word => {
+                        if (!word.english || !Array.isArray(word.translations)) {
+                            throw new Error('数据格式不正确');
+                        }
+                    });
+
+                    // 合并数据
+                    importedData.forEach(importedWord => {
+                        const existingWord = words.find(w => w.english.toLowerCase() === importedWord.english.toLowerCase());
+                        if (existingWord) {
+                            // 合并翻译
+                            importedWord.translations.forEach(newTrans => {
+                                if (!existingWord.translations.some(t => 
+                                    t.translation === newTrans.translation && t.type === newTrans.type
+                                )) {
+                                    existingWord.translations.push(newTrans);
+                                }
+                            });
+                        } else {
+                            // 添加新单词
+                            words.push({
+                                ...importedWord,
+                                id: Date.now() + Math.random(),
+                                timestamp: Date.now()
+                            });
+                        }
+                    });
+
+                    saveWords();
+                    renderWordList();
+                    showMessage('数据导入成功', 'success');
+                } catch (error) {
+                    showMessage('导入失败：' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // 重置文件输入
+        }
+
+        // 排序单词
+        function sortWords() {
+            const sortType = document.getElementById('sortSelect').value;
+            const wordsCopy = [...words];
+
+            switch (sortType) {
+                case 'alphabetical':
+                    wordsCopy.sort((a, b) => a.english.localeCompare(b.english));
+                    break;
+                case 'time':
+                    wordsCopy.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    break;
+                default:
+                    // 保持原有顺序
+                    break;
+            }
+
+            renderWordList(wordsCopy);
+        }
+
+        // 添加渲染主页面的函数
+        function renderMainPage() {
+            const container = document.querySelector('.container');
+            container.innerHTML = `
+                <div class="page-header">
+                    <h1>英语单词笔记本</h1>
+                </div>
+                
+                <!-- 功能按钮组 -->
+                <div class="card function-group">
+                    <button class="btn btn-primary" onclick="showAddWordForm()">添加单词</button>
+                    <button class="btn btn-success" onclick="exportData()">导出数据</button>
+                    <button class="btn btn-success" onclick="document.getElementById('importFile').click()">导入数据</button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                    <button class="btn btn-danger" onclick="deleteSelectedWords()">删除选中</button>
+                </div>
+
+                <!-- 排序选项 -->
+                <div class="card">
+                    <div class="form-group">
+                        <label for="sortSelect">排序方式：</label>
+                        <select id="sortSelect" class="form-control" onchange="sortWords()">
+                            <option value="default">默认排序</option>
+                            <option value="alphabetical">按字母排序</option>
+                            <option value="time">按时间排序</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 搜索栏 -->
+                <div class="card">
+                    <input type="text" id="searchInput" class="form-control" placeholder="搜索单词或翻译" onkeyup="searchWords()">
+                </div>
+
+                <!-- 单词列表 -->
+                <div id="wordList"></div>
+            `;
+            renderWordList();
+        }
+
+        // 初始化应用
+        init();
+    </script>
+</body>
+</html>
